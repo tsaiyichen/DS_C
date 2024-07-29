@@ -3,4 +3,5 @@ project(DS_C C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(DS_C main.c)
+add_executable(main main.c)
+add_executable(stack stack.c)
