@@ -7,8 +7,7 @@ typedef struct QueueNode{
 }queueNode_t;
 
 typedef struct Queue{
-    queueNode_t *rear;
-    queueNode_t *front;
+    queueNode_t* rear;
 }queue_t;
 
 queueNode_t* newNode(int x){
@@ -17,18 +16,19 @@ queueNode_t* newNode(int x){
     nodePointer->link = NULL;
     return nodePointer;
 }
+
 queue_t* newQueue(){
     queue_t* queue = (queue_t*)malloc(sizeof(queue_t));
-    queue->front = NULL;
     queue->rear = NULL;
     return queue;
 }
 
 void enQueue(queue_t* queue, int data){
     queueNode_t* t = newNode(data);
-    if(queue->front == NULL){
-        queue->front = t;
+    if(queue->rear == NULL){
+        t->link = t;
     }else{
+        t->link = queue->rear->link;
         queue->rear->link = t;
     }
     queue->rear = t;
@@ -36,19 +36,15 @@ void enQueue(queue_t* queue, int data){
 }
 
 int deQueue(queue_t* queue){
-    if(queue->front == NULL){
-        printf("queue is empty\n");
-        return INT_MIN;
+    queueNode_t* t = queue->rear->link;
+    int item = t->data;
+    if(queue->rear->link == queue->rear){
+        queue->rear = NULL;
     }else{
-       queueNode_t* t = queue->front;
-       int item = t->data;
-       queue->front = t->link;
-       if(queue->front == NULL){
-           queue->rear = NULL;
-       }
-       free(t);
-       return item;
+        queue->rear->link = queue->rear->link->link;
     }
+    free(t);
+    return item;
 }
 
 int main(void){
@@ -64,3 +60,4 @@ int main(void){
     printf("dequeue: %d\n", deQueue(q));
     printf("dequeue: %d\n", deQueue(q));
 }
+
