@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <stdbool.h>
 
 typedef struct StackNode{
@@ -8,44 +7,51 @@ typedef struct StackNode{
     struct StackNode* next;
 }stackNode_t;
 
+typedef struct Stack{
+    stackNode_t* top;
+}stack_t;
+
 stackNode_t* newNode(int x){
     stackNode_t* nodePointer = (stackNode_t*)malloc(sizeof(stackNode_t));
     nodePointer->data = x;
     nodePointer->next = NULL;
     return nodePointer;
 }
-
-bool isEmpty(stackNode_t* root){
-    return !root;
+stack_t* newStack(){
+    stack_t* stack = (stack_t*)malloc(sizeof(stack_t));
+    stack->top = NULL;
+    return stack;
 }
-void push(stackNode_t** root, int x){
+
+bool isEmpty(stack_t* stack){
+    return !stack;
+}
+void push(stack_t* stack, int x){
     stackNode_t* t = newNode(x);
-    t->next = *root;
-    *root = t;
+    t->next = stack->top;
+    stack->top = t;
     printf("push %d into stack.\n", x);
 }
 
-int pop(stackNode_t** root){
-    if(isEmpty(*root)){
+int pop(stack_t* stack){
+    if(isEmpty(stack)){
         printf("Stack Empty.\n");
     }else{
-        stackNode_t* t = *root;
+        stackNode_t* t = stack->top;
         int x = t->data;
-        *root = t->next;
+        stack->top = t->next;
         free(t);
         return x;
     }
 }
 
 int main(void){
-    stackNode_t* stack = NULL;
-    stackNode_t** root = &stack;
-
-    push(root, 1);
-    printf("%d\n", pop(root));
-    push(root, 2);
-    push(root, 3);
-    printf("%d\n", pop(root));
-    printf("%d\n", pop(root));
-    push(root, 4);
+    stack_t* stack = newStack();
+    push(stack, 1);
+    printf("%d\n", pop(stack));
+    push(stack, 2);
+    push(stack, 3);
+    printf("%d\n", pop(stack));
+    printf("%d\n", pop(stack));
+    push(stack, 4);
 }
