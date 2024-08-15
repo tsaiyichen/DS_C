@@ -29,6 +29,8 @@ private:
     bool isEqual(treenode_t *s, treenode_t *t);
     int countTotalNodes(treenode_t *root);
     int countLeafNodes(treenode_t *root);
+    int countDegree1Nodes(treenode_t* root);
+    int countDegree2Nodes(treenode_t *root);
 public:
     BinaryTree();
     BinaryTree(string arr[], int size);
@@ -40,6 +42,8 @@ public:
     bool isEqual(BinaryTree &bt);
     int countTotalNodes();
     int countLeafNodes();
+    int countDegree1Nodes();
+    int countDegree2Nodes();
 };
 
 BinaryTree::BinaryTree() : root(nullptr) {}
@@ -154,6 +158,20 @@ int BinaryTree::countLeafNodes(treenode_t* root) {
     }
 }
 
+int BinaryTree::countDegree1Nodes(treenode_t* root) {
+    if(root == NULL) return 0;
+    if(root->lchild && !(root->rchild)){
+        return countDegree1Nodes(root->lchild) + 1;
+    }else if(!(root->lchild) && root->rchild){
+        return countDegree1Nodes(root->rchild) + 1;
+    }else{
+        return countDegree1Nodes(root->lchild) + countDegree1Nodes(root->rchild);
+    }
+}
+
+int BinaryTree::countDegree1Nodes() {
+    return countDegree1Nodes(this->root);
+}
 int BinaryTree::countLeafNodes() {
     return countLeafNodes(this->root);
 }
@@ -193,6 +211,7 @@ int main(){
     cout << "BT1 vs BT2: " <<  bt1.isEqual(bt2) << " (same: 1, different: 0)" << endl;
     cout << "the number of total nodes of BT1: " << bt1.countTotalNodes() << endl;
     cout << "the number of total \"leaf\" nodes of BT1: " << bt1.countLeafNodes() << endl;
+    cout << "the number of total \"degree-1\" nodes of BT1: " << bt1.countDegree1Nodes() << endl;
 
 
 }
