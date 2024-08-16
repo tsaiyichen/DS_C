@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 #include <queue>
-
+#include <algorithm>
+#include <cmath>
 using namespace std;
 
 typedef struct TreeNode {
@@ -20,7 +21,7 @@ struct q_t {
 };
 
 class BinaryTree {
-private:
+protected:
     TreeNode* root;
     void inorder_traversal(treenode_t *root);
     void postorder_traversal(treenode_t *root);
@@ -31,6 +32,10 @@ private:
     int countLeafNodes(treenode_t *root);
     int countDegree1Nodes(treenode_t* root);
     int countDegree2Nodes(treenode_t *root);
+    int countHeight(treenode_t* root);
+    void swapTree(treenode_t* root);
+    double expressionEvaluation(treenode_t* root);
+    double op(double x1, double x2, string op);
 public:
     BinaryTree();
     BinaryTree(string arr[], int size);
@@ -44,6 +49,9 @@ public:
     int countLeafNodes();
     int countDegree1Nodes();
     int countDegree2Nodes();
+    int countHeight();
+    void swapTree();
+    double expressionEvaluation();
 };
 
 BinaryTree::BinaryTree() : root(nullptr) {}
@@ -104,7 +112,7 @@ void BinaryTree::inorder_traversal(treenode_t* root) {
         return;
     }else{
         inorder_traversal(root->lchild);
-        cout << root->data;
+        cout << " " << root->data << " ";
         inorder_traversal(root->rchild);
     }
 }
@@ -115,7 +123,7 @@ void BinaryTree::postorder_traversal(treenode_t *root) {
    }else{
        postorder_traversal(root->lchild);
        postorder_traversal(root->rchild);
-       cout << root->data;
+       cout << " " << root->data << " ";
    }
 }
 
@@ -123,7 +131,7 @@ void BinaryTree::preorder_traversal(treenode_t *root) {
     if(root == NULL){
         return;
     }else{
-        cout << root->data;
+        cout << " " << root->data << " ";
         preorder_traversal(root->lchild);
         preorder_traversal(root->rchild);
     }
@@ -169,6 +177,65 @@ int BinaryTree::countDegree1Nodes(treenode_t* root) {
     }
 }
 
+int BinaryTree::countDegree2Nodes(treenode_t* root) {
+    if(root == NULL) return 0;
+    if(root->lchild != NULL && root->rchild != NULL){
+        return countDegree2Nodes(root->lchild) + countDegree2Nodes(root->rchild) + 1;
+    }else{
+        return countDegree2Nodes(root->lchild) + countDegree2Nodes(root->rchild);
+    }
+}
+
+int BinaryTree::countHeight(treenode_t *root) {
+    if(root == NULL) return 0;
+    return max(countHeight(root->lchild), countHeight(root->rchild)) + 1;
+}
+
+void BinaryTree::swapTree(treenode_t *root) {
+    if(root == NULL) return;
+    swapTree(root->lchild);
+    swapTree(root->rchild);
+    treenode_t * temp = root->lchild;
+    root->lchild = root->rchild;
+    root->rchild = temp;
+    return;
+}
+
+double BinaryTree::expressionEvaluation(treenode_t* root) {
+    if(root == NULL) return 0;
+    if(root->lchild == NULL && root->rchild == NULL) //root is operand
+        return stod(root->data);
+    double x = expressionEvaluation(root->lchild);
+    double y = expressionEvaluation(root->rchild);
+    return op(x, y, root->data);
+}
+
+double BinaryTree::op(double x1, double x2, string op){
+
+    if(op == "+") return x1 + x2;
+    if(op == "-") return x1 - x2;
+    if(op == "*") return x1 * x2;
+    if(op == "/") return x1 / x2;
+    if(op == "^") return pow(x1, x2);
+
+    return INT_MIN;
+}
+
+double BinaryTree::expressionEvaluation() {
+    return expressionEvaluation(this->root);
+}
+void BinaryTree::swapTree() {
+    swapTree(this->root);
+    return;
+}
+
+int BinaryTree::countHeight(){
+    return countHeight(this->root);
+}
+int BinaryTree::countDegree2Nodes() {
+    return countDegree2Nodes(this->root);
+}
+
 int BinaryTree::countDegree1Nodes() {
     return countDegree1Nodes(this->root);
 }
@@ -193,7 +260,109 @@ void BinaryTree::postorder_traversal() {
     postorder_traversal(this->root);
     cout << endl;
 }
+class BinarySearchTree: public BinaryTree{
+public:
+    BinarySearchTree(int arr[], int len);
+    void insertNode(int x);
+    void deleteNode(int x);
+    string maxNode();
+    string minNode();
+    void searchNode(int x);
+private:
+    treenode_t* insertNode(treenode_t *root, int x);
+    treenode_t* deleteNode(treenode_t *root, int x);
+    treenode_t* minNode(treenode_t* root);
+    treenode_t* maxNode(treenode_t *root);
+    bool searchNode(treenode_t *root, int x);
+};
 
+treenode_t* BinarySearchTree::insertNode(treenode_t *root, int x) {
+    if(root == NULL){
+        treenode_t *temp = new TreeNode(to_string(x));
+        return temp;
+    }
+    if(x > stoi(root->data))
+        root->rchild = insertNode(root->rchild, x);
+    else if(x < stoi(root->data))
+        root->lchild = insertNode(root->lchild, x);
+
+    return root;
+}
+
+treenode_t *BinarySearchTree::deleteNode(treenode_t *root, int x) {
+    if(root == NULL) return NULL;
+    if(x > stoi(root->data))
+        root->rchild = deleteNode(root->rchild, x);
+    else if(x < stoi(root->data))
+        root->lchild = deleteNode(root->lchild, x);
+    else{
+        if(root->lchild == NULL && root->rchild == NULL){
+            //root is leaf node
+            delete root;
+            return NULL;
+        }else if(root->lchild != NULL && root->rchild != NULL){
+            //root is degree-2 node
+            treenode_t* replace = minNode(root->rchild);
+            root->data = replace->data;
+            root->rchild = deleteNode(root->rchild, stoi(replace->data));
+            /*
+             * treenode_t* replace = maxNode(root->lchild);
+             * root->data = replace->data;
+             * root->lchild = deleteNode(root->lchild, stoi(replace->data);
+             */
+        }else{
+            //root is degree-1 node
+            treenode_t *temp;
+            if(root->lchild) temp = root->lchild;
+            else temp = root->rchild;
+            delete root;
+            return temp;
+        }
+    }
+    return root;
+}
+
+string BinarySearchTree::minNode() {
+    return minNode(this->root)->data;
+}
+string BinarySearchTree::maxNode() {
+    return maxNode(this->root)->data;
+}
+void BinarySearchTree::deleteNode(int x) {
+    this->root = deleteNode(this->root, x);
+}
+treenode_t* BinarySearchTree::minNode(treenode_t* root){
+    if(root->lchild == NULL) return root;
+    else return minNode(root->lchild);
+}
+treenode_t* BinarySearchTree::maxNode(treenode_t *root) {
+    if(root->rchild == NULL) return root;
+    else return maxNode(root->rchild);
+}
+void BinarySearchTree::insertNode(int x) {
+    root = insertNode(root, x);
+}
+BinarySearchTree::BinarySearchTree(int arr[], int len): BinaryTree() {
+    for(int i = 0; i < len; i++){
+        int current = arr[i];
+        insertNode(current);
+    }
+}
+
+bool BinarySearchTree::searchNode(treenode_t *root, int x) {
+    if(root == NULL) return false;
+    if(x > stoi(root->data)) return searchNode(root->rchild, x);
+    if(x < stoi(root->data)) return searchNode(root->lchild, x);
+    return true;
+}
+
+void BinarySearchTree::searchNode(int x) {
+    if(searchNode(this->root, x)){
+        cout << "search for " << x << " is successful." << endl;
+    }else{
+        cout << "search for " << x << " is unsuccessful." << endl;
+    }
+}
 
 int main(){
     string bt1Arr[10] = {"A", "B", "C", "D", "E", "", "G", "", "", "H"};
@@ -212,6 +381,32 @@ int main(){
     cout << "the number of total nodes of BT1: " << bt1.countTotalNodes() << endl;
     cout << "the number of total \"leaf\" nodes of BT1: " << bt1.countLeafNodes() << endl;
     cout << "the number of total \"degree-1\" nodes of BT1: " << bt1.countDegree1Nodes() << endl;
+    cout << "the number of total \"degree-2\" nodes of BT1: " << bt1.countDegree2Nodes() << endl;
+    cout << "this tree height: " << bt1.countHeight() << endl;
+    bt1.swapTree();
+    cout << "After swap: inorder travesal = ";
+    bt1.inorder_traversal();
+    cout << "After swap: postorder travesal = ";
+    bt1.postorder_traversal();
+    string express[11]{"-", "-", "+", "9", "*", "6", "2", "", "", "1", "2"};
+    BinaryTree expBT(express, 11);
+    expBT.postorder_traversal();
+    cout << "evalution result: " << expBT.expressionEvaluation() << endl;
+    string express2[15]{"*", "-", "+", "4", "3", "5", "/", "", "", "", "", "", "", "6", "3"};
+    BinaryTree expBT2(express2, 15);
+    expBT2.postorder_traversal();
+    cout << "evalution result: " << expBT2.expressionEvaluation() << endl;
 
-
+    cout << "-------------------BST-------------------" << endl;
+    int bstArr[9] = {10, 33, 15, 8, 4, 5, 6, 26, 40};
+    BinarySearchTree bst1(bstArr, 9);
+    bst1.inorder_traversal();
+    bst1.insertNode(37);
+    bst1.inorder_traversal();
+    bst1.deleteNode(26);
+    bst1.inorder_traversal();
+    cout << "max: " << bst1.maxNode() << endl;
+    cout << "min: " << bst1.minNode() << endl;
+    bst1.searchNode(33);
+    bst1.searchNode(54);
 }
