@@ -26,6 +26,7 @@ protected:
     void inorder_traversal(treenode_t *root);
     void postorder_traversal(treenode_t *root);
     void preorder_traversal(treenode_t *root);
+    void levelorder_traversal(treenode_t *root);
     TreeNode* copyTree(treenode_t *root);
     bool isEqual(treenode_t *s, treenode_t *t);
     int countTotalNodes(treenode_t *root);
@@ -44,6 +45,7 @@ public:
     void inorder_traversal();
     void postorder_traversal();
     void preorder_traversal();
+    void levelorder_traversal();
     bool isEqual(BinaryTree &bt);
     int countTotalNodes();
     int countLeafNodes();
@@ -135,6 +137,25 @@ void BinaryTree::preorder_traversal(treenode_t *root) {
         preorder_traversal(root->lchild);
         preorder_traversal(root->rchild);
     }
+}
+void BinaryTree::levelorder_traversal(treenode_t *root){
+    if(root == nullptr){
+        return;
+    }else{
+        queue<treenode_t*> q;
+        q.push(root);
+        while(!q.empty()){
+            treenode_t* current = q.front();
+            q.pop();
+            cout << " " << current->data << " ";
+            if(current->lchild) q.push(current->lchild);
+            if(current->rchild) q.push(current->rchild);
+        }
+    }
+}
+void BinaryTree::levelorder_traversal(){
+    levelorder_traversal(this->root);
+    cout << endl;
 }
 
 bool BinaryTree::isEqual(treenode_t *s, treenode_t *t) {
@@ -372,11 +393,13 @@ int main(){
     bt1.inorder_traversal();
     bt1.postorder_traversal();
     bt1.preorder_traversal();
+    bt1.levelorder_traversal();
     BinaryTree bt2(bt1);
     cout << "BT2: " << endl;
     bt2.inorder_traversal();
     bt2.postorder_traversal();
     bt2.preorder_traversal();
+    bt2.levelorder_traversal();
     cout << "BT1 vs BT2: " <<  bt1.isEqual(bt2) << " (same: 1, different: 0)" << endl;
     cout << "the number of total nodes of BT1: " << bt1.countTotalNodes() << endl;
     cout << "the number of total \"leaf\" nodes of BT1: " << bt1.countLeafNodes() << endl;
