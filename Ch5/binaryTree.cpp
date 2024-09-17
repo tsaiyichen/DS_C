@@ -407,9 +407,9 @@ int main(){
     cout << "the number of total \"degree-2\" nodes of BT1: " << bt1.countDegree2Nodes() << endl;
     cout << "this tree height: " << bt1.countHeight() << endl;
     bt1.swapTree();
-    cout << "After swap: inorder travesal = ";
+    cout << "After swap: inorder traversal = ";
     bt1.inorder_traversal();
-    cout << "After swap: postorder travesal = ";
+    cout << "After swap: postorder traversal = ";
     bt1.postorder_traversal();
     string express[11]{"-", "-", "+", "9", "*", "6", "2", "", "", "1", "2"};
     BinaryTree expBT(express, 11);
